@@ -2,13 +2,14 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 
+using namespace std;
 using namespace ftxui;
 
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
   // placeholder database list
-  std::vector<std::string> databases = {
+  vector<string> databases = {
       "myapp_db",
       "laravel_db",
       "testing_db",
