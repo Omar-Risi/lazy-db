@@ -16,7 +16,10 @@ FetchContent_MakeAvailable(ftxui)
 # PostgreSQL
 find_package(PostgreSQL REQUIRED)
 
-add_executable(lazydb src/main.cpp)
+add_executable(lazydb 
+  src/main.cpp
+  src/ui.cpp
+)
 
 target_include_directories(lazydb PRIVATE 
     include
