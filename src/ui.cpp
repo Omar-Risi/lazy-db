@@ -14,7 +14,8 @@ Component BuildUI(AppState &state) {
   // Column 2 – query input
   auto query_input = Input(&state.query, "Enter query...");
   // Disable input focus when in command mode so ':' is not consumed
-  auto query_input_maybe = Maybe(query_input, [&state] { return !state.command_mode; });
+  auto query_input_maybe =
+      Maybe(query_input, [&state] { return !state.command_mode; });
   auto col2 = Container::Vertical({query_input_maybe});
 
   // Combined layout
@@ -30,32 +31,36 @@ Component BuildUI(AppState &state) {
     else
       cmd_bar = text("-- NORMAL --") | dim;
 
+    Element helper = text("(:) open command mode") | color(Color::Yellow);
+
     return vbox({
-               hbox({
-                   // Column 1
-                   vbox({
-                       text("Databases") | bold | color(Color::Blue),
-                       separator(),
-                       db_menu->Render() | border | flex,
-                       text("Tables") | bold | color(Color::Green),
-                       separator(),
-                       table_menu->Render() | border | flex,
-                   }) | size(WIDTH, EQUAL, 30),
-                   separator(),
-                   // Column 2
-                   vbox({
-                       text("Query") | bold | color(Color::Yellow),
-                       separator(),
-                       query_input->Render() | border,
-                       separator(),
-                       text("Results") | bold | color(Color::Yellow),
-                       separator(),
-                       text("No results yet") | dim | border | flex,
-                   }) | flex,
-               }) | border | flex,
-               // Vim-style command bar
-               cmd_bar | size(HEIGHT, EQUAL, 1),
-           });
+        hbox({
+            // Column 1
+            vbox({
+                text("Databases") | bold | color(Color::Blue),
+                separator(),
+                db_menu->Render() | border | flex,
+                text("Tables") | bold | color(Color::Green),
+                separator(),
+                table_menu->Render() | border | flex,
+            }) | size(WIDTH, EQUAL, 30),
+            separator(),
+            // Column 2
+            vbox({
+                text("Query") | bold | color(Color::Yellow),
+                separator(),
+                query_input->Render() | border,
+                separator(),
+                text("Results") | bold | color(Color::Yellow),
+                separator(),
+                text("No results yet") | dim | border | flex,
+            }) | flex,
+        }) | border |
+            flex,
+        // Vim-style command bar
+        cmd_bar | size(HEIGHT, EQUAL, 1),
+        helper | size(HEIGHT, EQUAL, 1),
+    });
   });
 
   return renderer;
