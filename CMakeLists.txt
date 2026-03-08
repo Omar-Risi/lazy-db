@@ -18,6 +18,7 @@ find_package(PostgreSQL REQUIRED)
 
 add_executable(lazydb 
   src/main.cpp
+  src/app.cpp
   src/ui/ui.cpp
   src/command/command.cpp
 )

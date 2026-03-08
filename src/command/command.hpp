@@ -6,7 +6,7 @@
 #include <vector>
 
 using CommandFn =
-    std::function<std::string(AppState &, std::vector<std::string>)>;
+    std::function<std::string(App &, std::vector<std::string>)>;
 
 struct Command {
   std::string name;
@@ -20,7 +20,7 @@ public:
 
   void Register(const std::string &name, const std::string &description,
                 CommandFn fn);
-  std::string Execute(const std::string &raw, AppState &state);
+  std::string Execute(const std::string &raw, App &state);
 
 const std::map<std::string, Command>& Commands() const { return commands_; }
 

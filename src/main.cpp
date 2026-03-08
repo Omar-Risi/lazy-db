@@ -1,5 +1,6 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/screen_interactive.hpp>
+#include <iostream>
 
 #include "app.hpp"
 #include "command/command.hpp"
@@ -10,7 +11,16 @@ using namespace ftxui;
 int main() {
   auto screen = ScreenInteractive::Fullscreen();
 
-  AppState state;
+  App state;
+
+  if (!state.Connect("host=localhost user=laravel "
+                     "dbname=postgres port=5432 password=password")) {
+    std::cerr << "Error: issue with connecting to DB" << std::endl;
+    return 1;
+  }
+
+  state.databases = state.FetchDatabases();
+
   CommandRegistry registry;
   // RegisterBuiltinCommands(registry);
 

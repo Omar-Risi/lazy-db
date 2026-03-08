@@ -1,19 +1,31 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <libpq-fe.h>
 
-struct AppState {
-  std::vector<std::string> databases = {"test_myapp_db", "laravel_db",
-                                        "testing_db"};
-  std::vector<std::string> tables = {"users", "posts", "migrations"};
+class App {
+public:
+  App() = default;
+  ~App() { Disconnect(); }
+
+  bool Connect(const std::string& connstr);
+  void Disconnect();
+  bool IsConnected() const { return conn_ != nullptr; }
+
+  std::vector<std::string> FetchDatabases();
+
+  // UI state
+  std::vector<std::string> databases;
+  std::vector<std::string> tables;
   std::string query;
   int selected_db = 0;
   int selected_table = 0;
 
-  // Command mode
-  bool command_mode = false;  // activated by ':'
-  std::string command_input;  // text typed after ':'
-  std::string command_result; // feedback shown in command bar
+  bool command_mode = false;
+  std::string command_input;
+  std::string command_result;
+  bool should_quit = false;
 
-  bool should_quit = false; // set by :q
+private:
+  PGconn* conn_ = nullptr;
 };
