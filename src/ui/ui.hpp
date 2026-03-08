@@ -1,5 +1,5 @@
 #pragma once
-#include "app.hpp"
+#include "../app.hpp"
 #include <ftxui/component/component.hpp>
 
 // Builds and returns the full interactive component tree.

@@ -2,8 +2,8 @@
 #include <ftxui/component/screen_interactive.hpp>
 
 #include "app.hpp"
-#include "command.hpp"
-#include "ui.hpp"
+#include "command/command.hpp"
+#include "ui/ui.hpp"
 
 using namespace ftxui;
 
