@@ -6,7 +6,7 @@ This project is still under development and is unstable therefore, please wait f
 the first version. 
 
 
-# Pre-Requisist
+# Pre-Requisites
 Coming Soon. 
 
 # Check out my socials [Here](https://reesi.dev/contact)
