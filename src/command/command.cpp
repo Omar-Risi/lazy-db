@@ -22,13 +22,13 @@ static std::vector<std::string> ParseArgs(const std::string &input) {
 CommandRegistry::CommandRegistry() {
 
   Register("q", "Quit the application",
-           [](AppState &state, std::vector<std::string>) -> std::string {
+           [](App &state, std::vector<std::string>) -> std::string {
              state.should_quit = true;
              return "";
            });
 
   Register("use", "Switch database: use <db>",
-           [](AppState &state, std::vector<std::string> args) -> std::string {
+           [](App &state, std::vector<std::string> args) -> std::string {
              if (args.empty())
                return "Usage: use <database>";
              auto it = std::find(state.databases.begin(), state.databases.end(),
@@ -41,16 +41,14 @@ CommandRegistry::CommandRegistry() {
            });
 
   Register("clear", "Clear the query input",
-           [](AppState &state, std::vector<std::string>) -> std::string {
+           [](App &state, std::vector<std::string>) -> std::string {
              state.query.clear();
              return "Query cleared";
            });
 
   Register("help", "List available commands",
-           [](AppState &state, std::vector<std::string>) -> std::string {
+           [](App &state, std::vector<std::string>) -> std::string {
              std::string out = "Commands:";
-             // help text is built from the registry in ui.cpp; this is the
-             // fallback result string shown in the command bar.
              (void)state;
              return out + " q, use <db>, clear, help";
            });
@@ -65,7 +63,7 @@ void CommandRegistry::Register(const std::string &name,
   commands_[name] = Command{name, description, std::move(fn)};
 }
 
-std::string CommandRegistry::Execute(const std::string &raw, AppState &state) {
+std::string CommandRegistry::Execute(const std::string &raw, App &state) {
   auto tokens = ParseArgs(raw);
   if (tokens.empty())
     return "";

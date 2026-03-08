@@ -5,7 +5,7 @@
 
 using namespace ftxui;
 
-Component BuildUI(AppState &state) {
+Component BuildUI(App &state) {
   // Column 1 – database & table menus
   auto db_menu = Menu(&state.databases, &state.selected_db);
   auto table_menu = Menu(&state.tables, &state.selected_table);
