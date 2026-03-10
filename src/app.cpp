@@ -1,6 +1,6 @@
 #include "app.hpp"
 #include <iostream>
-#include <stdexcept>
+#include <optional>
 
 bool App::Connect(const std::string &connstr) {
   conn_ = PQconnectdb(connstr.c_str());
@@ -28,5 +28,17 @@ std::vector<std::string> App::FetchDatabases() {
       dbs.push_back(PQgetvalue(res, i, 0));
   }
   PQclear(res);
+
   return dbs;
+}
+
+bool App::UseDB(std::optional<std::string> dbname) {
+  if (!dbname)
+    return false;
+
+  App::db = *dbname;
+
+  tables = {"item 1", "test_use_db"};
+
+  return true;
 }

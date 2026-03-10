@@ -1,13 +1,20 @@
 #include "ui.hpp"
 
 #include <ftxui/component/component.hpp>
+#include <ftxui/component/component_options.hpp>
 #include <ftxui/dom/elements.hpp>
 
 using namespace ftxui;
 
 Component BuildUI(App &state) {
   // Column 1 – database & table menus
-  auto db_menu = Menu(&state.databases, &state.selected_db);
+
+  state.dbOption.on_enter = [&state] {
+    state.UseDB(state.databases[state.selected_db]);
+  };
+
+  auto db_menu = Menu(&state.databases, &state.selected_db, state.dbOption);
+
   auto table_menu = Menu(&state.tables, &state.selected_table);
   auto col1 = Container::Vertical({db_menu, table_menu});
 

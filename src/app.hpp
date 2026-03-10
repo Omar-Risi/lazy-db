@@ -1,25 +1,30 @@
 #pragma once
+#include <ftxui/component/component_options.hpp>
+#include <libpq-fe.h>
+#include <optional>
 #include <string>
 #include <vector>
-#include <libpq-fe.h>
 
 class App {
 public:
   App() = default;
   ~App() { Disconnect(); }
 
-  bool Connect(const std::string& connstr);
+  bool Connect(const std::string &connstr);
   void Disconnect();
   bool IsConnected() const { return conn_ != nullptr; }
+  bool UseDB(std::optional<std::string> dbname = std::nullopt);
 
   std::vector<std::string> FetchDatabases();
 
   // UI state
   std::vector<std::string> databases;
+  std::string db;
   std::vector<std::string> tables;
   std::string query;
   int selected_db = 0;
   int selected_table = 0;
+  ftxui::MenuOption dbOption;
 
   bool command_mode = false;
   std::string command_input;
@@ -27,5 +32,5 @@ public:
   bool should_quit = false;
 
 private:
-  PGconn* conn_ = nullptr;
+  PGconn *conn_ = nullptr;
 };
