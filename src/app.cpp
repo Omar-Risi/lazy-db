@@ -9,7 +9,8 @@ bool App::Connect(const std::string &connstr) {
 
 void App::Disconnect() {
   if (conn_) {
-    std::cerr << "Error: " << PQerrorMessage(conn_) << std::endl;
+    if (PQstatus(conn_) != CONNECTION_OK)
+      std::cerr << "Error: " << PQerrorMessage(conn_) << std::endl;
     PQfinish(conn_);
     conn_ = nullptr;
   }
