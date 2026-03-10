@@ -32,13 +32,35 @@ std::vector<std::string> App::FetchDatabases() {
   return dbs;
 }
 
+std::vector<std::string> App::FetchTables() {
+  std::vector<std::string> tbls;
+  if (!IsConnected())
+    return tbls;
+
+  PGresult *res = PQexec(conn_, "SELECT tablename FROM pg_tables "
+                                "WHERE schemaname = 'public' "
+                                "ORDER BY tablename;");
+  if (PQresultStatus(res) == PGRES_TUPLES_OK) {
+    for (int i = 0; i < PQntuples(res); i++)
+      tbls.push_back(PQgetvalue(res, i, 0));
+  }
+  PQclear(res);
+  return tbls;
+}
+
 bool App::UseDB(std::optional<std::string> dbname) {
   if (!dbname)
     return false;
 
-  App::db = *dbname;
+  db = *dbname;
 
-  tables = {"item 1", "test_use_db"};
+  // Reconnect to the selected database
+  Disconnect();
+  std::string connstr =
+      "host=localhost user=laravel password=password port=5432 dbname=" + db;
+  if (!Connect(connstr))
+    return false;
 
+  tables = FetchTables();
   return true;
 }

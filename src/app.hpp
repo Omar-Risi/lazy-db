@@ -16,6 +16,7 @@ public:
   bool UseDB(std::optional<std::string> dbname = std::nullopt);
 
   std::vector<std::string> FetchDatabases();
+  std::vector<std::string> FetchTables();
 
   // UI state
   std::vector<std::string> databases;
