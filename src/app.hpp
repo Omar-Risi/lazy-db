@@ -14,18 +14,23 @@ public:
   void Disconnect();
   bool IsConnected() const { return conn_ != nullptr; }
   bool UseDB(std::optional<std::string> dbname = std::nullopt);
+  bool UseTable(std::optional<std::string> tableName = std::nullopt);
 
   std::vector<std::string> FetchDatabases();
   std::vector<std::string> FetchTables();
+  std::vector<std::string> FetchColumns();
 
   // UI state
   std::vector<std::string> databases;
   std::string db;
+  std::string table;
   std::vector<std::string> tables;
+  std::vector<std::string> columns;
   std::string query;
   int selected_db = 0;
   int selected_table = 0;
   ftxui::MenuOption dbOption;
+  ftxui::MenuOption tableOption;
 
   bool command_mode = false;
   std::string command_input;

@@ -48,6 +48,29 @@ std::vector<std::string> App::FetchTables() {
   return tbls;
 }
 
+std::vector<std::string> App::FetchColumns() {
+  std::vector<std::string> cols;
+  if (!IsConnected() || table.empty())
+    return cols;
+
+  const char *params[] = {table.c_str()};
+  PGresult *res =
+      PQexecParams(conn_,
+                   "SELECT column_name "
+                   "FROM information_schema.columns "
+                   "WHERE table_schema = 'public' AND table_name = $1 "
+                   "ORDER BY ordinal_position;",
+                   1, nullptr, params, nullptr, nullptr, 0);
+
+  if (PQresultStatus(res) == PGRES_TUPLES_OK) {
+    for (int i = 0; i < PQntuples(res); i++)
+      cols.push_back(PQgetvalue(res, i, 0));
+  }
+
+  PQclear(res);
+  return cols;
+}
+
 bool App::UseDB(std::optional<std::string> dbname) {
   if (!dbname)
     return false;
@@ -62,5 +85,16 @@ bool App::UseDB(std::optional<std::string> dbname) {
     return false;
 
   tables = FetchTables();
+  return true;
+}
+
+bool App::UseTable(std::optional<std::string> tableName) {
+  if (!tableName)
+    return false;
+
+  table = *tableName;
+
+  columns = FetchColumns();
+
   return true;
 }

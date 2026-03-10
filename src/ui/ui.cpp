@@ -13,9 +13,14 @@ Component BuildUI(App &state) {
     state.UseDB(state.databases[state.selected_db]);
   };
 
+  state.tableOption.on_enter = [&state] {
+    state.UseTable(state.tables[state.selected_table]);
+  };
+
   auto db_menu = Menu(&state.databases, &state.selected_db, state.dbOption);
 
-  auto table_menu = Menu(&state.tables, &state.selected_table);
+  auto table_menu =
+      Menu(&state.tables, &state.selected_table, state.tableOption);
   auto col1 = Container::Vertical({db_menu, table_menu});
 
   // Column 2 – query input
@@ -39,6 +44,24 @@ Component BuildUI(App &state) {
       cmd_bar = text("-- NORMAL --") | dim;
 
     Element helper = text("(:) open command mode") | color(Color::Yellow);
+    Element results_view;
+    if (state.columns.empty()) {
+      results_view = text("No results found") | dim;
+    } else {
+      Elements header_cells;
+      for (const auto &column : state.columns) {
+        header_cells.push_back(text(column) | bold | center |
+                               color(Color::White));
+      }
+
+      results_view =
+          vbox({
+              text("Columns for " + state.table) | bold | color(Color::Yellow),
+              separator(),
+              hbox(std::move(header_cells)) | xflex,
+          }) |
+          xflex;
+    }
 
     return vbox({
         hbox({
@@ -60,7 +83,7 @@ Component BuildUI(App &state) {
                 separator(),
                 text("Results") | bold | color(Color::Yellow),
                 separator(),
-                text("No results yet") | dim | border | flex,
+                results_view | border | flex,
             }) | flex,
         }) | border |
             flex,
