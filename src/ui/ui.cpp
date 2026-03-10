@@ -1,14 +1,27 @@
 #include "ui.hpp"
 
 #include <ftxui/component/component.hpp>
+#include <ftxui/component/component_options.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <ftxui/dom/table.hpp>
 
 using namespace ftxui;
 
 Component BuildUI(App &state) {
   // Column 1 – database & table menus
-  auto db_menu = Menu(&state.databases, &state.selected_db);
-  auto table_menu = Menu(&state.tables, &state.selected_table);
+
+  state.dbOption.on_enter = [&state] {
+    state.UseDB(state.databases[state.selected_db]);
+  };
+
+  state.tableOption.on_enter = [&state] {
+    state.UseTable(state.tables[state.selected_table]);
+  };
+
+  auto db_menu = Menu(&state.databases, &state.selected_db, state.dbOption);
+
+  auto table_menu =
+      Menu(&state.tables, &state.selected_table, state.tableOption);
   auto col1 = Container::Vertical({db_menu, table_menu});
 
   // Column 2 – query input
@@ -32,6 +45,34 @@ Component BuildUI(App &state) {
       cmd_bar = text("-- NORMAL --") | dim;
 
     Element helper = text("(:) open command mode") | color(Color::Yellow);
+    Element results_view;
+    if (state.columns.empty()) {
+      results_view = text("No results found") | dim;
+    } else {
+      std::vector<std::vector<std::string>> rows;
+      rows.push_back(state.columns);
+      for (const auto &record : state.records) {
+        rows.push_back(record);
+      }
+
+      Table table(rows);
+      table.SelectAll().Border();
+      table.SelectRow(0).Decorate(bold);
+      table.SelectRow(0).SeparatorVertical();
+      table.SelectRow(0).SeparatorHorizontal();
+
+      if (rows.size() > 1) {
+        table.SelectRows(1, static_cast<int>(rows.size())).SeparatorVertical();
+      }
+
+      results_view =
+          vbox({
+              text("Columns for " + state.table) | bold | color(Color::Yellow),
+              separator(),
+              table.Render() | xflex,
+          }) |
+          xflex;
+    }
 
     return vbox({
         hbox({
@@ -53,7 +94,7 @@ Component BuildUI(App &state) {
                 separator(),
                 text("Results") | bold | color(Color::Yellow),
                 separator(),
-                text("No results yet") | dim | border | flex,
+                results_view | border | flex,
             }) | flex,
         }) | border |
             flex,
