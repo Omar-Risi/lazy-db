@@ -3,6 +3,7 @@
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <ftxui/dom/table.hpp>
 
 using namespace ftxui;
 
@@ -48,17 +49,27 @@ Component BuildUI(App &state) {
     if (state.columns.empty()) {
       results_view = text("No results found") | dim;
     } else {
-      Elements header_cells;
-      for (const auto &column : state.columns) {
-        header_cells.push_back(text(column) | bold | center |
-                               color(Color::White));
+      std::vector<std::vector<std::string>> rows;
+      rows.push_back(state.columns);
+      for (const auto &record : state.records) {
+        rows.push_back(record);
+      }
+
+      Table table(rows);
+      table.SelectAll().Border();
+      table.SelectRow(0).Decorate(bold);
+      table.SelectRow(0).SeparatorVertical();
+      table.SelectRow(0).SeparatorHorizontal();
+
+      if (rows.size() > 1) {
+        table.SelectRows(1, static_cast<int>(rows.size())).SeparatorVertical();
       }
 
       results_view =
           vbox({
               text("Columns for " + state.table) | bold | color(Color::Yellow),
               separator(),
-              hbox(std::move(header_cells)) | xflex,
+              table.Render() | xflex,
           }) |
           xflex;
     }

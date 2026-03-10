@@ -19,6 +19,7 @@ public:
   std::vector<std::string> FetchDatabases();
   std::vector<std::string> FetchTables();
   std::vector<std::string> FetchColumns();
+  std::vector<std::vector<std::string>> FetchRecords();
 
   // UI state
   std::vector<std::string> databases;
@@ -26,6 +27,7 @@ public:
   std::string table;
   std::vector<std::string> tables;
   std::vector<std::string> columns;
+  std::vector<std::vector<std::string>> records;
   std::string query;
   int selected_db = 0;
   int selected_table = 0;

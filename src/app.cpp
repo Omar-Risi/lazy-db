@@ -71,6 +71,35 @@ std::vector<std::string> App::FetchColumns() {
   return cols;
 }
 
+std::vector<std::vector<std::string>> App::FetchRecords() {
+  std::vector<std::vector<std::string>> rows;
+  if (!IsConnected() || table.empty())
+    return rows;
+
+  std::string query = "SELECT * FROM \"" + table + "\" LIMIT 50;";
+  PGresult *res = PQexec(conn_, query.c_str());
+
+  if (PQresultStatus(res) == PGRES_TUPLES_OK) {
+    const int row_count = PQntuples(res);
+    const int col_count = PQnfields(res);
+
+    for (int i = 0; i < row_count; ++i) {
+      std::vector<std::string> row;
+      row.reserve(col_count);
+      for (int j = 0; j < col_count; ++j) {
+        if (PQgetisnull(res, i, j))
+          row.push_back("NULL");
+        else
+          row.push_back(PQgetvalue(res, i, j));
+      }
+      rows.push_back(std::move(row));
+    }
+  }
+
+  PQclear(res);
+  return rows;
+}
+
 bool App::UseDB(std::optional<std::string> dbname) {
   if (!dbname)
     return false;
@@ -95,6 +124,7 @@ bool App::UseTable(std::optional<std::string> tableName) {
   table = *tableName;
 
   columns = FetchColumns();
+  records = FetchRecords();
 
   return true;
 }
